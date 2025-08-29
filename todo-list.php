@@ -65,3 +65,11 @@ register_deactivation_hook( __FILE__, function() {
     }
 } );
 
+
+// Admin assets
+add_action( 'admin_enqueue_scripts', function( $hook ) {
+    if ( $hook !== 'toplevel_page_rtodo' ) return;
+    wp_enqueue_style( 'rtodo-admin', RTODO_PLUGIN_URL . 'assets/css/admin.css', [], RTODO_VERSION );
+} );
+
+
