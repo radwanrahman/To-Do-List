@@ -20,3 +20,48 @@ define( 'RTODO_PLUGIN_URL', plugin_dir_url( __FILE__ ) );
 
 global $wpdb;
 define( 'RTODO_TABLE', $wpdb->prefix . 'rtodo_tasks' );
+
+
+// Activation: create table + schedule cron
+register_activation_hook( __FILE__, 'rtodo_activate_plugin' );
+
+function rtodo_activate_plugin() {
+    global $wpdb;
+    require_once ABSPATH . 'wp-admin/includes/upgrade.php';
+    
+    $table_name = $wpdb->prefix . 'rtodo_tasks';
+    $charset_collate = $wpdb->get_charset_collate();
+    
+    $sql = "CREATE TABLE $table_name (
+        id BIGINT UNSIGNED NOT NULL AUTO_INCREMENT,
+        user_id BIGINT UNSIGNED NOT NULL,
+        title VARCHAR(255) NOT NULL,
+        description LONGTEXT NULL,
+        due_date DATE NULL,
+        priority ENUM('low','medium','high') NOT NULL DEFAULT 'medium',
+        status ENUM('pending','in_progress','completed') NOT NULL DEFAULT 'pending',
+        created_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+        updated_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+        PRIMARY KEY (id),
+        KEY user_id (user_id),
+        KEY due_date (due_date),
+        KEY status (status),
+        KEY priority (priority)
+    ) $charset_collate;";
+    
+    dbDelta( $sql );
+    
+    // Schedule daily reminders
+    if ( ! wp_next_scheduled( 'rtodo_daily_reminder' ) ) {
+        wp_schedule_event( time() + HOUR_IN_SECONDS, 'daily', 'rtodo_daily_reminder' );
+    }
+}
+
+// Deactivation: clear cron (keep data)
+register_deactivation_hook( __FILE__, function() {
+    $timestamp = wp_next_scheduled( 'rtodo_daily_reminder' );
+    if ( $timestamp ) {
+        wp_unschedule_event( $timestamp, 'rtodo_daily_reminder' );
+    }
+} );
+
