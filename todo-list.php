@@ -104,4 +104,34 @@ function rtodo_statuses() {
     ];
 }
 
+add_action( 'admin_init', 'rtodo_handle_request' );
+
+function rtodo_handle_request() {
+    if ( ! isset($_POST['rtodo_action']) ) return;
+    if ( ! wp_verify_nonce($_POST['rtodo_nonce'], 'rtodo_action') ) return;
+
+    global $wpdb;
+    $user_id = get_current_user_id();
+    $action  = sanitize_text_field($_POST['rtodo_action']);
+
+    if ( $action === 'create' ) {
+        $wpdb->insert( RTODO_TABLE, [
+            'user_id'     => $user_id,
+            'title'       => sanitize_text_field($_POST['title']),
+            'description' => sanitize_textarea_field($_POST['description']),
+            'due_date'    => sanitize_text_field($_POST['due_date']),
+            'priority'    => sanitize_text_field($_POST['priority']),
+        ]);
+    }
+
+    
+    if ( $action === 'delete' && isset($_POST['id']) ) {
+        $wpdb->delete( RTODO_TABLE, ['id' => intval($_POST['id']), 'user_id' => $user_id] );
+    }
+
+    if ( $action === 'complete' && isset($_POST['id']) ) {
+        $wpdb->update( RTODO_TABLE, ['status' => 'completed'], ['id' => intval($_POST['id']), 'user_id' => $user_id] );
+    }
+}
+
 
