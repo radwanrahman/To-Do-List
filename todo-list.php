@@ -22,7 +22,7 @@ global $wpdb;
 define( 'RTODO_TABLE', $wpdb->prefix . 'rtodo_tasks' );
 
 
-// Activation: create table + schedule cron
+// Activation
 register_activation_hook( __FILE__, 'rtodo_activate_plugin' );
 
 function rtodo_activate_plugin() {
@@ -57,7 +57,7 @@ function rtodo_activate_plugin() {
     }
 }
 
-// Deactivation: clear cron (keep data)
+// Deactivation 
 register_deactivation_hook( __FILE__, function() {
     $timestamp = wp_next_scheduled( 'rtodo_daily_reminder' );
     if ( $timestamp ) {
@@ -66,10 +66,42 @@ register_deactivation_hook( __FILE__, function() {
 } );
 
 
-// Admin assets
+// Admin style
 add_action( 'admin_enqueue_scripts', function( $hook ) {
     if ( $hook !== 'toplevel_page_rtodo' ) return;
     wp_enqueue_style( 'rtodo-admin', RTODO_PLUGIN_URL . 'assets/css/admin.css', [], RTODO_VERSION );
 } );
+
+
+// Admin menu
+add_action( 'admin_menu', function() {
+    add_menu_page(
+        'To-Do List',
+        'RToDo',
+        'read',
+        'rtodo',
+        'rtodo_render_page',
+        'dashicons-list-view',
+        26
+    );
+});
+
+// helper -priorities
+function rtodo_priorities() {
+    return [
+        'low'    => 'Low',
+        'medium' => 'Medium',
+        'high'   => 'High',
+    ];
+}
+
+// helper -statuses
+function rtodo_statuses() {
+    return [
+        'pending'     => 'Pending',
+        'in_progress' => 'In Progress',
+        'completed'   => 'Completed',
+    ];
+}
 
 
