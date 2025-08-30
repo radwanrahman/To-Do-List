@@ -1,0 +1,16 @@
+/* RToDo Admin Styles */
+.rtodo-wrap {
+    display: grid;
+    grid-template-columns: 1fr 2fr;
+    gap: 24px;
+    margin-top: 16px;
+}
+.rtodo-form-card, .rtodo-list-card {
+    background: #fff;
+    border: 1px solid #dcdcde;
+    border-radius: 12px;
+    padding: 16px;
+}
+.rtodo-row.rtodo-status-completed {
+    opacity: .7;
+}
