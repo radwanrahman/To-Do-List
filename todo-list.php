@@ -134,4 +134,38 @@ function rtodo_handle_request() {
     }
 }
 
+function rtodo_render_page() {
+    global $wpdb;
+    $user_id = get_current_user_id();
+    $tasks = $wpdb->get_results(
+        $wpdb->prepare(
+            "SELECT * FROM " . RTODO_TABLE . " WHERE user_id = %d ORDER BY due_date ASC",
+            $user_id
+        )
+    );
+    ?>
+    <div class="wrap rtodo-wrap">
+        <div class="rtodo-form-card">
+            <h2>Add Task</h2>
+            <form method="post">
+                <?php wp_nonce_field('rtodo_action','rtodo_nonce'); ?>
+                <input type="hidden" name="rtodo_action" value="create">
+                <p><input type="text" name="title" placeholder="Task Title" required></p>
+                <p><textarea name="description" placeholder="Description"></textarea></p>
+                <p><input type="date" name="due_date"></p>
+                <p>
+                    <select name="priority">
+                        <?php foreach ( rtodo_priorities() as $k => $v ) : ?>
+                            <option value="<?php echo esc_attr($k); ?>"><?php echo esc_html($v); ?></option>
+                        <?php endforeach; ?>
+                    </select>
+                </p>
+                <p><button type="submit" class="button button-primary">Add Task</button></p>
+            </form>
+        </div>
+    </div>
+    <?php
+}
+
+
 
