@@ -168,4 +168,71 @@ function rtodo_render_page() {
 }
 
 
+function rtodo_render_page() {
+    global $wpdb;
+    $user_id = get_current_user_id();
+    $tasks = $wpdb->get_results(
+        $wpdb->prepare(
+            "SELECT * FROM " . RTODO_TABLE . " WHERE user_id = %d ORDER BY due_date ASC",
+            $user_id
+        )
+    );
+    ?>
+    <div class="wrap rtodo-wrap">
+        <div class="rtodo-form-card">
+            <h2>Add Task</h2>
+            <form method="post">
+                <?php wp_nonce_field('rtodo_action','rtodo_nonce'); ?>
+                <input type="hidden" name="rtodo_action" value="create">
+                <p><input type="text" name="title" placeholder="Task Title" required></p>
+                <p><textarea name="description" placeholder="Description"></textarea></p>
+                <p><input type="date" name="due_date"></p>
+                <p>
+                    <select name="priority">
+                        <?php foreach ( rtodo_priorities() as $k => $v ) : ?>
+                            <option value="<?php echo esc_attr($k); ?>"><?php echo esc_html($v); ?></option>
+                        <?php endforeach; ?>
+                    </select>
+                </p>
+                <p><button type="submit" class="button button-primary">Add Task</button></p>
+            </form>
+        </div>
+
+        <div class="rtodo-list-card">
+            <h2>Your Tasks</h2>
+            <table class="widefat">
+                <thead><tr><th>Title</th><th>Due</th><th>Priority</th><th>Status</th><th>Actions</th></tr></thead>
+                <tbody>
+                <?php foreach ( $tasks as $task ) : ?>
+                    <tr class="rtodo-row rtodo-status-<?php echo esc_attr($task->status); ?>">
+                        <td><?php echo esc_html($task->title); ?></td>
+                        <td><?php echo esc_html($task->due_date); ?></td>
+                        <td><?php echo esc_html($task->priority); ?></td>
+                        <td><?php echo esc_html($task->status); ?></td>
+                        <td>
+                            <form method="post" style="display:inline;">
+                                <?php wp_nonce_field('rtodo_action','rtodo_nonce'); ?>
+                                <input type="hidden" name="rtodo_action" value="delete">
+                                <input type="hidden" name="id" value="<?php echo esc_attr($task->id); ?>">
+                                <button type="submit" class="button">Delete</button>
+                            </form>
+                            <?php if ( $task->status !== 'completed' ) : ?>
+                            <form method="post" style="display:inline;">
+                                <?php wp_nonce_field('rtodo_action','rtodo_nonce'); ?>
+                                <input type="hidden" name="rtodo_action" value="complete">
+                                <input type="hidden" name="id" value="<?php echo esc_attr($task->id); ?>">
+                                <button type="submit" class="button">Complete</button>
+                            </form>
+                            <?php endif; ?>
+                        </td>
+                    </tr>
+                <?php endforeach; ?>
+                </tbody>
+            </table>
+        </div>
+    </div>
+    <?php
+}
+
+
 
