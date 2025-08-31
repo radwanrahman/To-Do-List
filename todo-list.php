@@ -234,5 +234,22 @@ function rtodo_render_page() {
     <?php
 }
 
+// Frontend 
+add_shortcode( 'rtodo_list', function() {
+    global $wpdb;
+    $user_id = get_current_user_id();
+    if ( ! $user_id ) return '<p>Please login to view your tasks.</p>';
+
+    $tasks = $wpdb->get_results( $wpdb->prepare("SELECT * FROM " . RTODO_TABLE . " WHERE user_id=%d ORDER BY due_date ASC", $user_id) );
+
+    ob_start();
+    echo '<ul class="rtodo-shortcode">';
+    foreach ( $tasks as $task ) {
+        echo '<li>' . esc_html($task->title) . ' - ' . esc_html($task->status) . '</li>';
+    }
+    echo '</ul>';
+    return ob_get_clean();
+});
+
 
 
