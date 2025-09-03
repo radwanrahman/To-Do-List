@@ -1,16 +1,15 @@
-/* RToDo Admin Styles */
-.rtodo-wrap {
-    display: grid;
-    grid-template-columns: 1fr 2fr;
-    gap: 24px;
-    margin-top: 16px;
-}
-.rtodo-form-card, .rtodo-list-card {
-    background: #fff;
-    border: 1px solid #dcdcde;
-    border-radius: 12px;
-    padding: 16px;
-}
-.rtodo-row.rtodo-status-completed {
-    opacity: .7;
-}
+.rtodo-wrap .rtodo-grid{display:grid;grid-template-columns:1fr 2fr;gap:24px;margin-top:16px;}
+.rtodo-form-card,.rtodo-list-card{background:#fff;border:1px solid #dcdcde;border-radius:12px;padding:16px;}
+.rtodo-row.rtodo-status-completed{opacity:.7;}
+.rtodo-row.rtodo-status-completed strong{text-decoration:line-through;}
+.rtodo-actions .button-link-delete{color:#b32d2e}
+.rtodo-row .badge{display:inline-block;padding:2px 8px;border-radius:999px;border:1px solid #ccd0d4;font-size:11px}
+.rtodo-priority-high .badge{border-color:#e11d48;color:#e11d48}
+.rtodo-priority-medium .badge{border-color:#f59e0b;color:#f59e0b}
+.rtodo-priority-low .badge{border-color:#10b981;color:#10b981}
+#rtodo-edit-modal{background:#fff;border:1px solid #dcdcde;border-radius:12px;padding:20px;margin-top:24px;box-shadow:0 4px 6px rgba(0,0,0,0.1)}
+#rtodo-edit-modal.rtodo-hidden{display:none !important}
+.rtodo-row .description{font-size:13px;color:#646970;margin-top:4px}
+.rtodo-actions{white-space:nowrap}
+.rtodo-actions .button{margin-right:8px}
+@media (max-width:1100px){.rtodo-wrap .rtodo-grid{grid-template-columns:1fr}}
